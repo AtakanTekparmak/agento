@@ -24,11 +24,18 @@ def Agent(
     Returns:
         Callable: A function representing the agent.
     """
-    def process(
-            user_query: str = "",
-            history: List[ChatMessage] = history
-        ) -> List[ChatMessage]:
-        # If the history is empty, create a new history with the system prompt
+    def init_or_update_history(user_query: str, history: List[ChatMessage]):
+        """
+        If the history is empty, create a new history with the system prompt.
+        If the history is not empty, update the history with the user query.
+
+        Args:
+            user_query (str): The user query.
+            history (List[ChatMessage]): The history of the conversation.
+
+        Returns:
+            List[ChatMessage]: The updated history.
+        """
         if not history or len(history) == 0:
             system_prompt = load_system_prompt(
                 functions_schema= create_functions_schema(functions),
@@ -40,10 +47,26 @@ def Agent(
                     message=ChatCompletionMessage(role="system", content=system_prompt)
                 )
             ]
-
-        # If the user query is not empty, add it to the history
         if user_query:
             history.append(ChatMessage(sender="user", message=ChatCompletionMessage(role="user", content=user_query)))
+        return history
+
+    def process(
+            user_query: str = "",
+            history: List[ChatMessage] = history
+        ) -> List[ChatMessage]:
+        """
+        Process the user query and update the history.
+
+        Args:
+            user_query (str): The user query.
+            history (List[ChatMessage]): The history of the conversation.
+
+        Returns:
+            List[ChatMessage]: The updated history.
+        """
+        # Initialize or update the history
+        history = init_or_update_history(user_query, history)
 
         # Get the response from the chat client
         response = chat(history, model)
