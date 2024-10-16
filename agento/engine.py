@@ -22,7 +22,7 @@ def execute_python_code(code: str, functions: List[Callable] = []) -> Dict[str, 
         def wrapper(*args, **kwargs):
             result = func(*args, **kwargs)
             # Append the result to the list for this function
-            call_results.setdefault(func_name, []).append(result)
+            call_results.setdefault(func_name, []).append({f"Result {len(call_results.get(func_name, [])) + 1}": result})
             return result
         return wrapper
 
