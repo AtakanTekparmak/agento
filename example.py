@@ -1,4 +1,4 @@
-from agento import Agent
+from agento import Agent, print_history
 from typing import List
 
 # Define the functions that the agents can use
@@ -25,5 +25,4 @@ agent = Agent(
 results = agent("Can you get 4 apples, eat 1 of them and sell the rest?")
 
 # Print the results
-for message in results[1:]:
-    print(f"-----------\n~Sender: {message.sender}\n~Message: {message.message.content}\n-----------\n")
+print_history(results)

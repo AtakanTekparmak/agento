@@ -1,4 +1,5 @@
 from typing import List, Callable
+import json
 
 from agento.settings import DEFAULT_MODEL
 from agento.engine import execute_python_code
@@ -115,6 +116,8 @@ def Agent(
         # If the response contains code, execute the code
         if is_code:
             results = execute_python_code(code=code, functions=functions)
+            # Convert the results to a JSON string
+            results = json.dumps(results, indent=2)
 
             # Add the agent response and the function results to the history
             history.append(ChatMessage(sender=name, message=ChatCompletionMessage(role="assistant", content=response)))

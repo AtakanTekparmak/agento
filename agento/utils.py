@@ -3,7 +3,13 @@ from typing import List, Callable, Any, Tuple
 import inspect
 import json
 
+from rich.console import Console
+from rich.panel import Panel
+from rich.text import Text
+from rich.table import Table
+
 from agento.settings import SYSTEM_PROMPT_PATH
+from agento.client import ChatMessage
 
 def extract_python_code(content: str) -> Tuple[str, bool]:
     """
@@ -88,3 +94,35 @@ def load_system_prompt(
     except FileNotFoundError:
         print(f"Error: File not found at {file_path}")
         return ""
+    
+def print_history(history: List[ChatMessage], print_system_prompt: bool = False) -> None:
+    """
+    Prints the chat history in a nice and readable format using Rich.
+
+    Args:
+        history (List[ChatMessage]): The chat history to print.
+        print_system_prompt (bool): Whether to print the system prompt.
+    """
+    console = Console()
+    
+    table = Table(show_header=False, expand=True, box=None)
+    table.add_column("Sender", style="bold", width=10)
+    table.add_column("Message", style="", ratio=1)
+    
+    if not print_system_prompt:
+        history = history[1:]
+
+    for message in history:
+        sender = message.sender
+        content = message.message.content
+
+        sender_style = "green" if sender == "user" else "blue"
+        message_text = Text(content)
+        message_text.highlight_words(["```"], "yellow")  # Highlight code blocks
+
+        table.add_row(
+            Text("\n" + sender, style=sender_style),
+            Panel(message_text, expand=False, border_style="dim")
+        )
+
+    console.print(table)
