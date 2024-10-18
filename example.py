@@ -8,7 +8,7 @@ def get_apples(quantity: int):
 
 def eat_apples(apples: List[str]):
     """Eat a certain quantity of apples."""
-    return apples, f"Eaten {len(apples)} apples."
+    return f"Eaten {len(apples)} apples."
 
 def sell_apples(apples: List[str]):
     """Sell a certain quantity of apples."""
