@@ -13,6 +13,12 @@ cd agento
 make install
 ```
 
+## Testing
+
+To run the tests, simply run:
+```bash
+make test
+```
 
 ## Usage
 
@@ -124,8 +130,4 @@ Example output, click to expand (text-based so Desktop is recommended):
  Apple       │ Now you have $3 and 3 apples remaining. If you'd like to do anything else, let me know! │   
 ```
 
-## Testing
-
-To run the tests, simply run:
-```bash
-make test
+</details>
