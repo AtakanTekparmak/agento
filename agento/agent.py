@@ -5,12 +5,16 @@ from agento.engine import execute_python_code
 from agento.client import ChatMessage, ChatCompletionMessage, chat
 from agento.utils import extract_python_code, load_system_prompt, create_functions_schema
 
+# Type alias for the process function
+ProcessFunction = Callable[[str, List[ChatMessage]], List[ChatMessage]]
+
 def Agent(
         name: str,
         instructions: str,
         functions: List[Callable] = [],
         model: str = DEFAULT_MODEL,
         history: List[ChatMessage] = [],
+        team: List[ProcessFunction] = [],
     ):
     """
     Function to create an agent.
@@ -35,6 +39,28 @@ def Agent(
             str: The formatted agent name.
         """
         return agent_name.strip().replace(" ", "_").lower()
+    
+    def create_transfer_functions(team: List[ProcessFunction]) -> List[Callable]:
+        """
+        Create the transfer functions.
+
+        Args:
+            team (List[ProcessFunction]): The team of agents.
+
+        Returns:
+            List[Callable]: The transfer functions.
+        """
+        
+        team_functions = []
+
+        for agent in team:
+            def team_function(task: str, agent=agent) -> str:
+                return agent(task)[-1].message.content
+            team_function.__name__ = f"transfer_to_{format_agent_name(agent.__name__)}"
+            team_function.__doc__ = f"Transfer task to team member: {agent.__name__} "
+            team_functions.append(team_function)
+
+        return team_functions
 
     def init_or_update_history(user_query: str, history: List[ChatMessage]):
         """
@@ -106,4 +132,5 @@ def Agent(
         return history
 
     process.__name__ = format_agent_name(name)
+    process.__doc__ = process.__doc__.replace("the history.", "the history, using agent: " + format_agent_name(name))
     return process
