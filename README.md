@@ -15,7 +15,10 @@ pip install -r requirements.txt
 
 ## Usage
 
-1. Go to `agento/settings.py` and set the `DEFAULT_MODEL`, `BASE_URL` and `API_KEY` according to your needs.
+1. Copy the `.env.example` file to `.env` and set the `DEFAULT_MODEL`, `BASE_URL` and `OPENAI_API_KEY` according to your needs.
+```bash
+make copy_env
+```
 
 ### Example 1: Single Agent with Many Functions
 
