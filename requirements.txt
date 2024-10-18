@@ -2,3 +2,4 @@ pydantic
 openai
 rich
 python-dotenv
+pytest
