@@ -20,7 +20,7 @@ pip install -r requirements.txt
 ### Example 1: Single Agent with Many Functions
 
 ```python
-from agento import Agent
+from agento import Agent, print_history
 from typing import List
 
 # Define the functions that the agents can use
@@ -30,7 +30,7 @@ def get_apples(quantity: int):
 
 def eat_apples(apples: List[str]):
     """Eat a certain quantity of apples."""
-    return apples, f"Eaten {len(apples)} apples."
+    return f"Eaten {len(apples)} apples."
 
 def sell_apples(apples: List[str]):
     """Sell a certain quantity of apples."""
@@ -47,6 +47,5 @@ agent = Agent(
 results = agent("Can you get 4 apples, eat 1 of them and sell the rest?")
 
 # Print the results
-for message in results[1:]:
-    print(f"-----------\n~Sender: {message.sender}\n~Message: {message.message.content}\n-----------\n")
+print_history(results)
 ```
