@@ -20,3 +20,5 @@ result2 = example_function2(result, arg2)
 Follow the following instructions:
 
 {{instructions}}
+
+DO NOT use print() statements AT ALL. Avoid mutating variables whenever possible.

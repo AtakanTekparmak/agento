@@ -42,5 +42,12 @@ def execute_python_code(code: str, functions: List[Callable] = []) -> Dict[str, 
         if k not in initial_keys and not k.startswith('__')
     }
 
+    # Match the call results with the variable names
+    for func_name, results in call_results.items():
+        for variable_name, variable_value in variables.items():
+            for result in results:
+                if variable_value == result:
+                    call_results[func_name] = variable_name
+
     # Return both call_results and variables
     return {'function_results': call_results, 'variables': variables}

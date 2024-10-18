@@ -79,9 +79,53 @@ history = agent("Can you get 4 apples, eat 1 of them and sell the rest?")
 print_history(history)
 ```
 
+Example output, click to expand (text-based so Desktop is recommended):
+
+<details>
+<summary>Example Output</summary>
+
+```
+             ╭────────────────────────────────────────────────────────╮                                                                                                        
+ user        │ Can you get 4 apples, eat 1 of them and sell the rest? │                                                                                                        
+             ╰────────────────────────────────────────────────────────╯                                                                                                        
+             ╭──────────────────────────────────────────────╮                                                                                                                  
+ Apple       │ ```python                                    │                                                                                                                  
+ Agent       │ apples = get_apples(4)                       │                                                                                                                  
+             │ remaining_apples = eat_apples(apples, 1)     │                                                                                                                  
+             │ money_earned = sell_apples(remaining_apples) │                                                                                                                  
+             │ ```                                          │                                                                                                                  
+             ╰──────────────────────────────────────────────╯                                                                                                                  
+             ╭───────────────────────────────────────╮                                                                                                                         
+ user        │ <|function_results|>                  │                                                                                                                         
+             │ {                                     │                                                                                                                         
+             │   "function_results": {               │                                                                                                                         
+             │     "get_apples": "apples",           │                                                                                                                         
+             │     "eat_apples": "remaining_apples", │                                                                                                                         
+             │     "sell_apples": "money_earned"     │                                                                                                                         
+             │   },                                  │                                                                                                                         
+             │   "variables": {                      │                                                                                                                         
+             │     "apples": [                       │                                                                                                                         
+             │       "Apple",                        │                                                                                                                         
+             │       "Apple",                        │                                                                                                                         
+             │       "Apple",                        │                                                                                                                         
+             │       "Apple"                         │                                                                                                                         
+             │     ],                                │                                                                                                                         
+             │     "remaining_apples": [             │                                                                                                                         
+             │       "Apple",                        │                                                                                                                         
+             │       "Apple",                        │                                                                                                                         
+             │       "Apple"                         │                                                                                                                         
+             │     ],                                │                                                                                                                         
+             │     "money_earned": "$3"              │                                                                                                                         
+             │   }                                   │                                                                                                                         
+             │ }                                     │                                                                                                                         
+             │ <|end_function_results|>              │                                                                                                                         
+             ╰───────────────────────────────────────╯                                                                                                                         
+             ╭─────────────────────────────────────────────────────────────────────────────────────────╮                                                                       
+ Apple       │ Now you have $3 and 3 apples remaining. If you'd like to do anything else, let me know! │   
+```
+
 ## Testing
 
 To run the tests, simply run:
 ```bash
 make test
-```

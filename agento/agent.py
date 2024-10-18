@@ -123,7 +123,7 @@ def Agent(
             history.append(ChatMessage(sender=name, message=ChatCompletionMessage(role="assistant", content=response)))
             history.append(ChatMessage(
                     sender="user", 
-                    message=ChatCompletionMessage(role="user", content=f"\n<|function_results|>\n{results}\n<|end_function_results|>")
+                    message=ChatCompletionMessage(role="user", content=f"<|function_results|>\n{results}\n<|end_function_results|>")
             ))
 
             # Get the response from the chat client
