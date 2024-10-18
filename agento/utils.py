@@ -75,7 +75,7 @@ def load_system_prompt(
         else:
             return content.replace(
                 "{{prompt_beginning}}", 
-                "You are an expert AI assistant that specializes in providing Python code to solve the task/problem at hand provided by the user.."
+                "You are an expert AI assistant that specializes in providing Python code to solve the task/problem at hand provided by the user."
             )
     
     try:
