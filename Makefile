@@ -19,7 +19,8 @@ help:
 	@echo "  1. install           Install dependencies and set up the environment (should be run first)"
 	@echo "  2. run               Run the example.py script"	
 	@echo "  3. copy_env          Copy the .env.example file to .env"
-	@echo "  4. clean             Remove the virtual environment and its contents"
+	@echo "  4. test              Run the tests"
+	@echo "  5. clean             Remove the virtual environment and its contents"
 
 # Install dependencies and set up the environment
 install: 
@@ -35,6 +36,11 @@ copy_env:
 run: 
 	. $(VENV_NAME)/bin/activate && \
 	$(PYTHON) example.py
+
+# Run the tests
+test:
+	. $(VENV_NAME)/bin/activate && \
+	pytest -v tests/
 
 # Clean the virtual environment
 clean:
