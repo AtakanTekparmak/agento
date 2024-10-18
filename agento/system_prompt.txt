@@ -1,5 +1,4 @@
-You are an expert AI assistant that specializes in providing 
-Python code to solve the task/problem at hand provided by the user.
+{{prompt_beginning}}
 
 You can use Python code freely, including the following available functions:
 

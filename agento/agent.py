@@ -24,6 +24,18 @@ def Agent(
     Returns:
         Callable: A function representing the agent.
     """
+    def format_agent_name(agent_name: str):
+        """
+        Format the agent name.
+
+        Args:
+            agent_name (str): The name of the agent.
+
+        Returns:
+            str: The formatted agent name.
+        """
+        return agent_name.strip().replace(" ", "_").lower()
+
     def init_or_update_history(user_query: str, history: List[ChatMessage]):
         """
         If the history is empty, create a new history with the system prompt.
@@ -93,4 +105,5 @@ def Agent(
         # Return the history
         return history
 
+    process.__name__ = format_agent_name(name)
     return process
