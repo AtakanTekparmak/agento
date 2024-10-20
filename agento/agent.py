@@ -4,7 +4,7 @@ import json
 from agento.settings import DEFAULT_MODEL
 from agento.engine import execute_python_code
 from agento.client import ChatMessage, ChatCompletionMessage, chat
-from agento.utils import extract_python_code, load_system_prompt, create_functions_schema
+from agento.utils import extract_python_code, load_system_prompt, create_functions_schema, format_agent_name
 
 # Type alias for the process function
 ProcessFunction = Callable[[str, List[ChatMessage]], List[ChatMessage]]
@@ -18,7 +18,11 @@ def Agent(
         team: List[ProcessFunction] = [],
     ):
     """
-    Function to create an agent.
+    Function to create an agent. The process() function 
+    is the main function that is called to process the 
+    user query and/or history. The process() function,
+    after being defined, gets the name and docstring of 
+    the agent.
 
     Args:
         name (str): The name of the agent.
@@ -29,21 +33,11 @@ def Agent(
     Returns:
         Callable: A function representing the agent.
     """
-    def format_agent_name(agent_name: str):
-        """
-        Format the agent name.
-
-        Args:
-            agent_name (str): The name of the agent.
-
-        Returns:
-            str: The formatted agent name.
-        """
-        return agent_name.strip().replace(" ", "_").lower()
     
     def create_transfer_functions(team: List[ProcessFunction]) -> List[Callable]:
         """
-        Create the transfer functions.
+        Create the transfer functions. Used for an agent 
+        with a team to transfer the task to the next agent.
 
         Args:
             team (List[ProcessFunction]): The team of agents.
@@ -96,6 +90,12 @@ def Agent(
         ) -> List[ChatMessage]:
         """
         Process the user query and update the history.
+        The process is as follows:  
+        1. The history is initialized with the system prompt and the user query or updated with the user query.
+        2. The response is generated from the chat client.
+        3. The Python code is extracted from the response.
+        4. The code is executed and the results are added to the history as a new user message containing the function results.
+        5. The response is generated from the chat client.
 
         Args:
             user_query (str): The user query.
@@ -130,10 +130,10 @@ def Agent(
             response = chat(history, model)
             history.append(ChatMessage(sender=name, message=ChatCompletionMessage(role="assistant", content=response)))
 
-
         # Return the history
         return history
 
+    # Set the name and docstring of the process function
     process.__name__ = format_agent_name(name)
     process.__doc__ = process.__doc__.replace("the history.", "the history, using agent: " + format_agent_name(name))
     return process

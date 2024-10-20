@@ -126,3 +126,15 @@ def print_history(history: List[ChatMessage], print_system_prompt: bool = False)
         )
 
     console.print(table)
+
+def format_agent_name(agent_name: str):
+    """
+    Format the agent name into snake case.
+
+    Args:
+        agent_name (str): The name of the agent.
+
+    Returns:
+        str: The formatted agent name.
+    """
+    return agent_name.strip().replace(" ", "_").lower()
