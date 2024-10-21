@@ -15,7 +15,10 @@ function calls or results. In this second response, be concise and to the point.
 ```python
 result = example_function(arg1, "string")
 result2 = example_function2(result, arg2)
+result, history = transfer_to_agent(task, agent_name, context_variables) 
 ```
+
+ONLY USE THE transfer_to_agent FUNCTION IF YOU HAVE IT DEFINED IN YOUR FUNCTIONS SCHEMA.
 
 Follow the following instructions:
 
@@ -27,4 +30,22 @@ Below is the context variables passed on to you from the previous agent(s), if i
 {{context_variables}}
 <|end_context_variables|>
 
-DO NOT use print() statements AT ALL. Avoid mutating variables whenever possible.
+Example usage of context variables:
+
+<|context_variables_example|>
+{'apples': ['Apple', 'Apple', 'Apple']}
+<|end_context_variables_example|>
+
+<|context_variables_example_usage|>
+```python
+new_apples = apples + ['Apple']
+```
+<|end_context_variables_example_usage|>
+
+DO NOT USE THEM LIKE THIS:
+```python
+new_apples = context_variables['apples'] + ['Apple']
+```
+
+DO NOT use print() statements AT ALL. Avoid mutating variables whenever possible. 
+DO NOT REFERENCE CONTEXT VARIABLES LIKE context_variables['apples'] DIRECTLY, AT ALL. 

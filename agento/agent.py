@@ -2,7 +2,7 @@ from typing import List, Callable
 import json
 
 from agento.settings import DEFAULT_MODEL
-from agento.engine import execute_python_code
+from agento.engine import execute_python_code, process_results
 from agento.client import ChatMessage, ChatCompletionMessage, chat
 from agento.utils import extract_python_code, load_system_prompt, create_functions_schema, format_agent_name
 
@@ -48,13 +48,13 @@ def Agent(
         
         # Create a map of agent names to their response functions
         agents_map = {
-            format_agent_name(agent.__name__): lambda task, context: agent(task=task, context_variables=context)[-1].message.content for agent in team
+            format_agent_name(agent.__name__): lambda task, context: agent(task=task, context_variables=context) for agent in team
         }
 
         # Create a string of available agent names
         available_agents = ", ".join(agents_map.keys())
 
-        def transfer_to_agent(task: str, agent_name: str, context_variables = None) -> str:
+        def transfer_to_agent(task: str, agent_name: str, context_variables = None) -> tuple[str, list[ChatMessage]]:
             """
             Transfer the task to the agent with the 
             given name and return the agent's response.
@@ -62,12 +62,14 @@ def Agent(
             Args:
                 task (str): The task to transfer.
                 agent_name (str): The name of the agent to transfer the task to. Available option(s) are: {available_agents}.
-                context_variables (str): The context variables to pass to the other agent.
+                context_variables: The context variables to pass to the other agent. You have to pass them as a dictionary,
+                with the keys being the variable names and the values being the variable values.
 
             Returns:
                 str: The agent's response to the task.
+                list[ChatMessage]: The history of the transfer agent after processing the task.
             """
-            return agents_map[agent_name](task, context_variables)
+            return agents_map[agent_name](task, context_variables)[-1].message.content, agents_map[agent_name](task, context_variables)
         
         # Set the name and docstring of the transfer function
         transfer_to_agent.__doc__ = transfer_to_agent.__doc__.replace("{available_agents}", available_agents)
@@ -138,19 +140,32 @@ def Agent(
         Returns:
             List[ChatMessage]: The updated history.
         """
+        
         # Initialize or update the history
         history = init_or_update_history(task, history, context_variables)
 
         # Get the response from the chat client
         response = chat(history, model)
-        print(response) # REMOVE: for debugging
+        print("-"*30)
+        print(f"Sender: {name}")
+        print(f"Response:\n{response}")  # REMOVE: for debugging
+        print(f"Context variables:\n{context_variables}") # REMOVE: for debugging
+        print("-"*30)
 
         # Extract the Python code from the response
         code, is_code = extract_python_code(response)
 
         # If the response contains code, execute the code
         if is_code:
-            results = execute_python_code(code=code, functions=functions if len(team) == 0 else functions + [create_transfer_function(team)])
+            results = execute_python_code(
+                code=code, 
+                functions=functions if len(team) == 0 else functions + [create_transfer_function(team)], 
+                context_variables=context_variables
+            )
+
+            # Process the results
+            results = process_results(results)
+
             # Convert the results to a JSON string
             results = json.dumps(results, indent=2)
 
