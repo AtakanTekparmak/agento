@@ -21,4 +21,10 @@ Follow the following instructions:
 
 {{instructions}}
 
+Below is the context variables passed on to you from the previous agent(s), if is empty, you are not called by another agent and you should ignore it.
+
+<|context_variables|>
+{{context_variables}}
+<|end_context_variables|>
+
 DO NOT use print() statements AT ALL. Avoid mutating variables whenever possible.

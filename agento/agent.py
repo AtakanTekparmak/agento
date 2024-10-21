@@ -34,7 +34,7 @@ def Agent(
         Callable: A function representing the agent.
     """
     
-    def create_transfer_functions(team: List[ProcessFunction]) -> List[Callable]:
+    def create_transfer_function(team: List[ProcessFunction]) -> Callable:
         """
         Create the transfer functions. Used for an agent 
         with a team to transfer the task to the next agent.
@@ -46,76 +46,111 @@ def Agent(
             List[Callable]: The transfer functions.
         """
         
-        team_functions = []
+        # Create a map of agent names to their response functions
+        agents_map = {
+            format_agent_name(agent.__name__): lambda task, context: agent(task=task, context_variables=context)[-1].message.content for agent in team
+        }
 
-        for agent in team:
-            def team_function(task: str, agent=agent) -> str:
-                return agent(task)[-1].message.content
-            team_function.__name__ = f"transfer_to_{format_agent_name(agent.__name__)}"
-            team_function.__doc__ = f"Transfer task to team member: {agent.__name__} "
-            team_functions.append(team_function)
+        # Create a string of available agent names
+        available_agents = ", ".join(agents_map.keys())
 
-        return team_functions
+        def transfer_to_agent(task: str, agent_name: str, context_variables = None) -> str:
+            """
+            Transfer the task to the agent with the 
+            given name and return the agent's response.
 
-    def init_or_update_history(user_query: str, history: List[ChatMessage]):
+            Args:
+                task (str): The task to transfer.
+                agent_name (str): The name of the agent to transfer the task to. Available option(s) are: {available_agents}.
+                context_variables (str): The context variables to pass to the other agent.
+
+            Returns:
+                str: The agent's response to the task.
+            """
+            return agents_map[agent_name](task, context_variables)
+        
+        # Set the name and docstring of the transfer function
+        transfer_to_agent.__doc__ = transfer_to_agent.__doc__.replace("{available_agents}", available_agents)
+
+        return transfer_to_agent
+
+    def init_or_update_history(task: str, history: List[ChatMessage], context_variables = None):
         """
         If the history is empty, create a new history with the system prompt.
         If the history is not empty, update the history with the user query.
 
         Args:
-            user_query (str): The user query.
+            task (str): The user query.
             history (List[ChatMessage]): The history of the conversation.
 
         Returns:
             List[ChatMessage]: The updated history.
         """
         if not history or len(history) == 0:
-            system_prompt = load_system_prompt(
-                functions_schema= create_functions_schema(functions),
-                instructions=instructions
-            )
+            if len(team) > 0:
+                # Add transfer functions to the functions
+                functions_schema = create_functions_schema(functions + [create_transfer_function(team)])
+            else:
+                functions_schema = create_functions_schema(functions)
+
+            # Load the system prompt
+            if context_variables:
+                system_prompt = load_system_prompt(
+                    functions_schema=functions_schema,
+                    instructions=instructions,
+                    context_variables=context_variables
+                )
+            else:
+                system_prompt = load_system_prompt(
+                    functions_schema=functions_schema,
+                    instructions=instructions
+                )
             history = [
                 ChatMessage(
                     sender="system", 
                     message=ChatCompletionMessage(role="system", content=system_prompt)
                 )
             ]
-        if user_query:
-            history.append(ChatMessage(sender="user", message=ChatCompletionMessage(role="user", content=user_query)))
+        if task:
+            history.append(ChatMessage(sender="user", message=ChatCompletionMessage(role="user", content=task)))
         return history
 
     def process(
-            user_query: str = "",
-            history: List[ChatMessage] = history
+            task: str = "",
+            history: List[ChatMessage] = history,
+            context_variables = None
         ) -> List[ChatMessage]:
         """
-        Process the user query and update the history.
+        Process the user query and update the history 
+        using agent: {name}.
+
         The process is as follows:  
         1. The history is initialized with the system prompt and the user query or updated with the user query.
-        2. The response is generated from the chat client.
+        2. The response is generated from the chat client using agent: {name}.
         3. The Python code is extracted from the response.
         4. The code is executed and the results are added to the history as a new user message containing the function results.
-        5. The response is generated from the chat client.
+        5. The response is generated from the chat client using agent: {name}.
 
         Args:
-            user_query (str): The user query.
+            task (str): The user query.
             history (List[ChatMessage]): The history of the conversation.
 
         Returns:
             List[ChatMessage]: The updated history.
         """
         # Initialize or update the history
-        history = init_or_update_history(user_query, history)
+        history = init_or_update_history(task, history, context_variables)
 
         # Get the response from the chat client
         response = chat(history, model)
+        print(response) # REMOVE: for debugging
 
         # Extract the Python code from the response
         code, is_code = extract_python_code(response)
 
         # If the response contains code, execute the code
         if is_code:
-            results = execute_python_code(code=code, functions=functions)
+            results = execute_python_code(code=code, functions=functions if len(team) == 0 else functions + [create_transfer_function(team)])
             # Convert the results to a JSON string
             results = json.dumps(results, indent=2)
 
@@ -135,5 +170,5 @@ def Agent(
 
     # Set the name and docstring of the process function
     process.__name__ = format_agent_name(name)
-    process.__doc__ = process.__doc__.replace("the history.", "the history, using agent: " + format_agent_name(name))
+    process.__doc__ = process.__doc__.replace("\{name\}", format_agent_name(name))
     return process

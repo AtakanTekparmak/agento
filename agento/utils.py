@@ -60,6 +60,7 @@ def create_functions_schema(functions: List[Callable]) -> str:
 def load_system_prompt(
         functions_schema: str = "",
         instructions: str = "",
+        context_variables = None,
         is_orchestrator: bool = False,
         file_path: str = SYSTEM_PROMPT_PATH
     ) -> str:
@@ -71,6 +72,9 @@ def load_system_prompt(
     
     def replace_instructions(content: str) -> str:
         return content.replace("{{instructions}}", instructions)
+    
+    def replace_context_variables(content: str) -> str:
+        return content.replace("{{context_variables}}", str(context_variables) if not isinstance(context_variables, str) else context_variables)
     
     def replace_prompt_beginning(content: str) -> str:
         if is_orchestrator:
@@ -88,7 +92,9 @@ def load_system_prompt(
         with open(file_path, "r") as file:
             return replace_instructions(
                 replace_functions_schema(
-                    replace_prompt_beginning(file.read())
+                    replace_prompt_beginning(
+                        replace_context_variables(file.read())
+                    )
                 )
             )
     except FileNotFoundError:
