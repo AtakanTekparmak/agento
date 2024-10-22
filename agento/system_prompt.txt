@@ -18,8 +18,6 @@ result2 = example_function2(result, arg2)
 result, history = transfer_to_agent(task, agent_name, context_variables) 
 ```
 
-ONLY USE THE transfer_to_agent FUNCTION IF YOU HAVE IT DEFINED IN YOUR FUNCTIONS SCHEMA. Otherwise, you should ignore it.
-
 Follow the following instructions:
 
 {{instructions}}
@@ -34,7 +32,7 @@ Example right and wrong usage of context variables, with the context variables b
 
 ```python
 new_apples = apples + ['Apple'] # Right usage   
-new_apples = context_variables['apples'] + ['Apple'] # Wrong usage
+new_apples = context_variables['apples'] + ['Apple'] # Wrong usage, DO NOT DO THIS
 ```
 
 DO NOT use print() statements AT ALL. Avoid mutating variables whenever possible. 
