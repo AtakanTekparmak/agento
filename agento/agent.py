@@ -178,7 +178,7 @@ def Agent(
             # Add the chat messages to the history
             if len(chat_messages) > 0:
                 history = add_messages_to_history(history, chat_messages)
-                
+
             history.append(ChatMessage(
                     sender="user", 
                     message=ChatCompletionMessage(role="user", content=f"<|function_results|>\n{results}\n<|end_function_results|>")

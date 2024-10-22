@@ -26,7 +26,7 @@ def execute_python_code(
     initial_keys = set(env.keys())
     
     # Add the context variables to the execution environment, add them as variables
-    if context_variables:
+    if context_variables and isinstance(context_variables, dict):
         for key, value in context_variables.items():
             env[key] = value
     

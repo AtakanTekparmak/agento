@@ -55,4 +55,4 @@ agent = Agent(
 history = agent("Can you get 4 apples, eat 1 of them and sell the remaining 3?")
 
 # Print the history
-print_history(history)
+print_history(history=history)
