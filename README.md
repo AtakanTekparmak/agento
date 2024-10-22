@@ -26,6 +26,10 @@ make test
 ```bash
 make copy_env
 ```
+I use [Qwen2.5-Coder-7B-Instruct](https://huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct) in f16 precision through [Ollama](https://ollama.com/). To use the default settings, simply:
+```bash
+ollama pull qwen2.5-coder:7b-instruct-fp16
+```
 
 ### Example 1: Single Agent with Many Functions
 
