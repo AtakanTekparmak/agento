@@ -100,12 +100,14 @@ def Agent(
                 system_prompt = load_system_prompt(
                     functions_schema=functions_schema,
                     instructions=instructions,
-                    context_variables=context_variables
+                    context_variables=context_variables,
+                    is_orchestrator=True if len(team) > 0 else False
                 )
             else:
                 system_prompt = load_system_prompt(
                     functions_schema=functions_schema,
-                    instructions=instructions
+                    instructions=instructions,
+                    is_orchestrator=True if len(team) > 0 else False
                 )
             history = [
                 ChatMessage(

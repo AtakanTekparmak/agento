@@ -87,7 +87,7 @@ def load_system_prompt(
                 "{{prompt_beginning}}", 
                 "You are an expert AI assistant that specializes in providing Python code to solve the task/problem at hand provided by the user."
             ).replace(
-                "result, history = transfer_to_agent(task, agent_name, context_variables)",
+                "result3, history = transfer_to_agent(task, agent_name, context_variables)",
                 ""
             )
     
