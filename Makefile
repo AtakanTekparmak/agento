@@ -18,9 +18,10 @@ help:
 	@echo "Targets:"
 	@echo "  1. install           Install dependencies and set up the environment (should be run first)"
 	@echo "  2. run               Run the example.py script"	
-	@echo "  3. copy_env          Copy the .env.example file to .env"
-	@echo "  4. test              Run the tests"
-	@echo "  5. clean             Remove the virtual environment and its contents"
+	@echo "  3. run_multi_agent   Run the example2.py script"
+	@echo "  4. copy_env          Copy the .env.example file to .env"
+	@echo "  5. test              Run the tests"
+	@echo "  6. clean             Remove the virtual environment and its contents"
 
 # Install dependencies and set up the environment
 install: 
@@ -36,6 +37,11 @@ copy_env:
 run: 
 	. $(VENV_NAME)/bin/activate && \
 	$(PYTHON) example.py
+
+# Run the multi-agent interaction example script
+run_multi_agent:
+	. $(VENV_NAME)/bin/activate && \
+	$(PYTHON) example2.py
 
 # Run the tests
 test:

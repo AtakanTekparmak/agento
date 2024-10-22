@@ -31,6 +31,15 @@ I use [Qwen2.5-Coder-7B-Instruct](https://huggingface.co/Qwen/Qwen2.5-Coder-7B-I
 ollama pull qwen2.5-coder:7b-instruct-fp16
 ```
 
+### Multi-Agent Interaction Example
+
+**DISCLAIMER:** Work in progress. The sub-agent is being called twice and I am not sure why. Trying to figure that out, any help is highly appreciated.
+
+To run the multi-agent interaction example script located in `example2.py`:
+```bash
+make run_multi_agent
+```
+
 ### Example 1: Single Agent with Many Functions
 
 ```python
