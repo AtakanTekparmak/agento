@@ -122,7 +122,10 @@ def print_history(history: List[ChatMessage], print_system_prompt: bool = False)
         sender = message.sender
         content = message.message.content
 
-        sender_style = "green" if sender == "user" else "blue"
+        if sender == "user" and content.startswith("<|function_results|>"):
+            sender = "Function Results"
+
+        sender_style = "green" if sender == "user" else f"#{hash(sender) % 0xFFFFFF:06x}"
         message_text = Text(content)
         message_text.highlight_words(["```"], "yellow")  # Highlight code blocks
 

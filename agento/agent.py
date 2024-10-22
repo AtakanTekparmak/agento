@@ -1,9 +1,9 @@
 from typing import List, Callable
 import json
 
-from agento.settings import DEFAULT_MODEL
+from agento.settings import DEFAULT_MODEL, DEBUG
 from agento.engine import execute_python_code, process_results
-from agento.client import ChatMessage, ChatCompletionMessage, chat
+from agento.client import ChatMessage, ChatCompletionMessage, chat, add_messages_to_history
 from agento.utils import extract_python_code, load_system_prompt, create_functions_schema, format_agent_name
 
 # Type alias for the process function
@@ -88,7 +88,7 @@ def Agent(
         Returns:
             List[ChatMessage]: The updated history.
         """
-        if not history or len(history) == 0:
+        if not history or not isinstance(history, list) or not len(history) > 0:
             if len(team) > 0:
                 # Add transfer functions to the functions
                 functions_schema = create_functions_schema(functions + [create_transfer_function(team)])
@@ -120,7 +120,8 @@ def Agent(
     def process(
             task: str = "",
             history: List[ChatMessage] = history,
-            context_variables = None
+            context_variables = None,
+            debug: bool = DEBUG
         ) -> List[ChatMessage]:
         """
         Process the user query and update the history 
@@ -146,11 +147,13 @@ def Agent(
 
         # Get the response from the chat client
         response = chat(history, model)
-        print("-"*30)
-        print(f"Sender: {name}")
-        print(f"Response:\n{response}")  # REMOVE: for debugging
-        print(f"Context variables:\n{context_variables}") # REMOVE: for debugging
-        print("-"*30)
+
+        if debug:
+            print("-"*30)
+            print(f"Sender: {name}")
+            print(f"Response:\n{response}")  # REMOVE: for debugging
+            print(f"Context variables:\n{context_variables}") # REMOVE: for debugging
+            print("-"*30)
 
         # Extract the Python code from the response
         code, is_code = extract_python_code(response)
@@ -164,13 +167,18 @@ def Agent(
             )
 
             # Process the results
-            results = process_results(results)
+            results, chat_messages = process_results(results)
 
             # Convert the results to a JSON string
             results = json.dumps(results, indent=2)
 
             # Add the agent response and the function results to the history
             history.append(ChatMessage(sender=name, message=ChatCompletionMessage(role="assistant", content=response)))
+
+            # Add the chat messages to the history
+            if len(chat_messages) > 0:
+                history = add_messages_to_history(history, chat_messages)
+                
             history.append(ChatMessage(
                     sender="user", 
                     message=ChatCompletionMessage(role="user", content=f"<|function_results|>\n{results}\n<|end_function_results|>")

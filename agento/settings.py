@@ -16,3 +16,4 @@ SYSTEM_PROMPT_PATH = "agento/system_prompt.txt"
 DEFAULT_MODEL = "qwen2.5-coder:7b-instruct-fp16" # Default model for the agent
 BASE_URL = os.getenv("BASE_URL") if os.getenv("BASE_URL") else "http://localhost:11434/v1" # Base URL for the OpenAI client
 API_KEY = os.getenv("OPENAI_API_KEY") if os.getenv("OPENAI_API_KEY") else "ollama" # API key for the OpenAI client
+DEBUG = True # Whether to print debug information

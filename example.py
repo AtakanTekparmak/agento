@@ -47,7 +47,7 @@ agent = Agent(
 )
 
 # Run the agent
-history = agent("Can you get 4 apples, eat 1 of them and sell the rest?")
+history = agent("Can you get 4 apples, eat 1 of them and sell the rest?", debug=False)
 
 # Print the history
 print_history(history)

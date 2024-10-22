@@ -1,4 +1,4 @@
-from typing import List, Callable, Dict, Any
+from typing import List, Callable, Dict, Any, Tuple
 
 from agento.client import ChatMessage
 
@@ -65,7 +65,7 @@ def execute_python_code(
     # Return both call_results and variables
     return {'function_results': call_results, 'variables': variables}
 
-def process_results(results: Dict[str, Any]) -> Dict[str, Any]:
+def process_results(results: Dict[str, Any]) -> Tuple[Dict[str, Any], List[ChatMessage]]:
     """
     Process the results of a function call session to remove the history from the results
     and remove any list of ChatMessages from the variables.
@@ -74,7 +74,7 @@ def process_results(results: Dict[str, Any]) -> Dict[str, Any]:
         results (Dict[str, Any]): The results of a function call session.
     
     Returns:
-        Dict[str, Any]: The processed results.
+        Tuple[Dict[str, Any], List[ChatMessage]]: The processed results and the chat messages.
     """
     def is_list_of_chat_messages(obj: Any) -> bool:
         """
@@ -107,8 +107,16 @@ def process_results(results: Dict[str, Any]) -> Dict[str, Any]:
         else:
             results["function_results"]["transfer_to_agent"] = "Transfer task result"
 
-    # Remove the history from the results
-    results["variables"] = {k: v for k, v in results["variables"].items() if k != 'history'}
-    results["variables"] = {k: v for k, v in results["variables"].items() if not is_list_of_chat_messages(v)}   
+    # Save the history and chat messages in separate variables
+    chat_messages = []
+    history = results["variables"].get('history', None)
+    chat_messages = [v for _, v in results["variables"].items() if is_list_of_chat_messages(v)]
+    chat_messages = chat_messages + history if history else chat_messages
+    # If chat_messages is a list of one list, extract the list
+    if len(chat_messages) > 0 and isinstance(chat_messages, list) and isinstance(chat_messages[0], list):
+        chat_messages = chat_messages[0]
+    
+    # Remove the history and chat messages from the results
+    results["variables"] = {k: v for k, v in results["variables"].items() if k != 'history' and not is_list_of_chat_messages(v)}
 
-    return results
+    return results, chat_messages[2:] # Skip the first two messages (system prompt and task prompt)
