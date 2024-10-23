@@ -35,3 +35,18 @@ def chat(messages: List[ChatMessage], model: str = DEFAULT_MODEL) -> str:
     )
     
     return response.choices[0].message.content
+
+def add_messages_to_history(history: List[ChatMessage], messages: List[ChatMessage]) -> List[ChatMessage]:
+    """
+    Add messages to the history. This method is used to 
+    add the messages from a sub-agent to the history of 
+    the main agent.
+
+    Args:
+        history (List[ChatMessage]): The history to add the messages to.
+        messages (List[ChatMessage]): The messages to add to the history.
+
+    Returns:
+        List[ChatMessage]: The updated history with the new messages.
+    """
+    return history + messages

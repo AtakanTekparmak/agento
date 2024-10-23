@@ -60,6 +60,7 @@ def create_functions_schema(functions: List[Callable]) -> str:
 def load_system_prompt(
         functions_schema: str = "",
         instructions: str = "",
+        context_variables = None,
         is_orchestrator: bool = False,
         file_path: str = SYSTEM_PROMPT_PATH
     ) -> str:
@@ -72,6 +73,9 @@ def load_system_prompt(
     def replace_instructions(content: str) -> str:
         return content.replace("{{instructions}}", instructions)
     
+    def replace_context_variables(content: str) -> str:
+        return content.replace("{{context_variables}}", str(context_variables) if not isinstance(context_variables, str) else context_variables)
+    
     def replace_prompt_beginning(content: str) -> str:
         if is_orchestrator:
             return content.replace(
@@ -82,13 +86,18 @@ def load_system_prompt(
             return content.replace(
                 "{{prompt_beginning}}", 
                 "You are an expert AI assistant that specializes in providing Python code to solve the task/problem at hand provided by the user."
+            ).replace(
+                "result3, history = transfer_to_agent(task, agent_name, context_variables)",
+                ""
             )
     
     try:
         with open(file_path, "r") as file:
             return replace_instructions(
                 replace_functions_schema(
-                    replace_prompt_beginning(file.read())
+                    replace_prompt_beginning(
+                        replace_context_variables(file.read())
+                    )
                 )
             )
     except FileNotFoundError:
@@ -116,7 +125,10 @@ def print_history(history: List[ChatMessage], print_system_prompt: bool = False)
         sender = message.sender
         content = message.message.content
 
-        sender_style = "green" if sender == "user" else "blue"
+        if sender == "user" and content.startswith("<|function_results|>"):
+            sender = "Function Results"
+
+        sender_style = "green" if sender == "user" else f"#{hash(sender) % 0xFFFFFF:06x}"
         message_text = Text(content)
         message_text.highlight_words(["```"], "yellow")  # Highlight code blocks
 
