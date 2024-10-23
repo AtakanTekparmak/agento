@@ -69,7 +69,8 @@ def Agent(
                 str: The agent's response to the task.
                 list[ChatMessage]: The history of the transfer agent after processing the task.
             """
-            return agents_map[agent_name](task, context_variables)[-1].message.content, agents_map[agent_name](task, context_variables)
+            result = agents_map[agent_name](task, context_variables)
+            return result[-1].message.content, result
         
         # Set the name and docstring of the transfer function
         transfer_to_agent.__doc__ = transfer_to_agent.__doc__.replace("{available_agents}", available_agents)
@@ -151,11 +152,11 @@ def Agent(
         response = chat(history, model)
 
         if debug:
-            print("-"*30)
+            print("-"*50)
             print(f"Sender: {name}")
-            print(f"Response:\n{response}")  # REMOVE: for debugging
-            print(f"Context variables:\n{context_variables}") # REMOVE: for debugging
-            print("-"*30)
+            print(f"Response:\n{response}") 
+            print(f"Context variables:\n{context_variables}") 
+            print("-"*50)
 
         # Extract the Python code from the response
         code, is_code = extract_python_code(response)
