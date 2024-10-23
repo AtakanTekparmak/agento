@@ -12,6 +12,7 @@ class ChatCompletionMessage(BaseModel):
 class ChatMessage(BaseModel):
     sender: str
     message: ChatCompletionMessage
+    include_in_chat: bool = True
 
 def chat(messages: List[ChatMessage], model: str = DEFAULT_MODEL) -> str:
     """
@@ -31,7 +32,7 @@ def chat(messages: List[ChatMessage], model: str = DEFAULT_MODEL) -> str:
     
     response = client.chat.completions.create(
         model=model,
-        messages=[message.message.model_dump() for message in messages]
+        messages=[message.message.model_dump() for message in messages if message.include_in_chat]
     )
     
     return response.choices[0].message.content

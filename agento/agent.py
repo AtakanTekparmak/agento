@@ -180,6 +180,8 @@ def Agent(
 
             # Add the chat messages to the history
             if len(chat_messages) > 0:
+                # Set the include_in_chat flag to False for the chat messages
+                chat_messages = [ChatMessage(sender=chat_message.sender, message=chat_message.message, include_in_chat=False) for chat_message in chat_messages]
                 history = add_messages_to_history(history, chat_messages)
 
             history.append(ChatMessage(
