@@ -7,7 +7,7 @@ from agento.client import ChatMessage, ChatCompletionMessage, chat, add_messages
 from agento.utils import extract_python_code, load_system_prompt, create_functions_schema, format_agent_name
 
 # Type alias for the process function
-ProcessFunction = Callable[[str, List[ChatMessage]], List[ChatMessage]]
+AgentFunction = Callable[[str, List[ChatMessage]], List[ChatMessage]]
 
 def Agent(
         name: str,
@@ -15,7 +15,7 @@ def Agent(
         functions: List[Callable] = [],
         model: str = DEFAULT_MODEL,
         history: List[ChatMessage] = [],
-        team: List[ProcessFunction] = [],
+        team: List[AgentFunction] = [],
     ):
     """
     Function to create an agent. The process() function 
@@ -29,18 +29,20 @@ def Agent(
         instructions (str): The instructions for the agent.
         functions (List[Callable]): The functions that the agent can call.
         model (str): The model to use for the agent.
+        history (List[ChatMessage]): The history of the conversation.
+        team (List[AgentFunction]): The team of agents.
 
     Returns:
         Callable: A function representing the agent.
     """
     
-    def create_transfer_function(team: List[ProcessFunction]) -> Callable:
+    def create_transfer_function(team: List[AgentFunction]) -> Callable:
         """
         Create the transfer functions. Used for an agent 
         with a team to transfer the task to the next agent.
 
         Args:
-            team (List[ProcessFunction]): The team of agents.
+            team (List[AgentFunction]): The team of agents.
 
         Returns:
             List[Callable]: The transfer functions.

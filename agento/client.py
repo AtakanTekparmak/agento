@@ -6,10 +6,12 @@ import openai
 from agento.settings import BASE_URL, API_KEY, DEFAULT_MODEL
 
 class ChatCompletionMessage(BaseModel):
+    """Wrapper class for a chat message."""
     role: str
     content: str
 
 class ChatMessage(BaseModel):
+    """Wrapper class for a ChatCompletionMessage."""
     sender: str
     message: ChatCompletionMessage
     include_in_chat: bool = True
