@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 import openai
 
-from agento.settings import BASE_URL, API_KEY, DEFAULT_MODEL
+from agento.settings import PROVIDER_URLS, DEFAULT_PROVIDER
 
 class ChatCompletionMessage(BaseModel):
     """Wrapper class for a chat message."""
@@ -16,20 +16,26 @@ class ChatMessage(BaseModel):
     message: ChatCompletionMessage
     include_in_chat: bool = True
 
-def chat(messages: List[ChatMessage], model: str = DEFAULT_MODEL) -> str:
+def chat(messages: List[ChatMessage], model: str, provider: str = DEFAULT_PROVIDER) -> str:
     """
-    Get a chat completion from the OpenAI client.
+    Get a chat completion from the specified provider.
 
     Args:
         messages (List[ChatMessage]): The messages to send to the client.
         model (str): The model to use for the completion.
+        provider (str): The provider to use for the completion. Available options: lm_studio, ollama, vllm, openrouter.
 
     Returns:
-        str: The content of the response from the OpenAI client.
+        str: The content of the response from the provider.
     """
+    if provider not in PROVIDER_URLS:
+        raise ValueError(f"Provider {provider} not supported. Available providers: {', '.join(PROVIDER_URLS.keys())}")
+    
+    base_url, api_key = PROVIDER_URLS[provider]
+    
     client = openai.Client(
-        api_key=API_KEY,
-        base_url=BASE_URL,
+        api_key=api_key,
+        base_url=base_url,
     )
     
     response = client.chat.completions.create(

@@ -1,7 +1,7 @@
 from typing import List, Callable
 import json
 
-from agento.settings import DEFAULT_MODEL, DEBUG
+from agento.settings import DEFAULT_MODEL, DEFAULT_PROVIDER, DEBUG
 from agento.engine import execute_python_code, process_results
 from agento.client import ChatMessage, ChatCompletionMessage, chat, add_messages_to_history
 from agento.utils import extract_python_code, load_system_prompt, create_functions_schema, format_agent_name
@@ -14,6 +14,7 @@ def Agent(
         instructions: str,
         functions: List[Callable] = [],
         model: str = DEFAULT_MODEL,
+        provider: str = DEFAULT_PROVIDER,
         history: List[ChatMessage] = [],
         team: List[AgentFunction] = [],
     ):
@@ -29,6 +30,7 @@ def Agent(
         instructions (str): The instructions for the agent.
         functions (List[Callable]): The functions that the agent can call.
         model (str): The model to use for the agent.
+        provider (str): The provider to use for the agent.
         history (List[ChatMessage]): The history of the conversation.
         team (List[AgentFunction]): The team of agents.
 
@@ -151,7 +153,7 @@ def Agent(
         history = init_or_update_history(task, history, context_variables)
 
         # Get the response from the chat client
-        response = chat(history, model)
+        response = chat(history, model, provider)
 
         if debug:
             print("-"*50)
@@ -192,7 +194,7 @@ def Agent(
             ))
 
             # Get the response from the chat client
-            response = chat(history, model)
+            response = chat(history, model, provider)
             history.append(ChatMessage(sender=name, message=ChatCompletionMessage(role="assistant", content=response)))
 
         # Return the history
