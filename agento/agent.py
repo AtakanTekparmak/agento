@@ -1,7 +1,7 @@
 from typing import List, Callable
 import json
 
-from agento.settings import DEFAULT_MODEL, DEFAULT_PROVIDER, DEBUG
+from agento.settings import DEBUG
 from agento.engine import execute_python_code, process_results
 from agento.client import ChatMessage, ChatCompletionMessage, chat, add_messages_to_history
 from agento.utils import extract_python_code, load_system_prompt, create_functions_schema, format_agent_name
@@ -12,9 +12,9 @@ AgentFunction = Callable[[str, List[ChatMessage]], List[ChatMessage]]
 def Agent(
         name: str,
         instructions: str,
+        model: str,
+        provider: str,
         functions: List[Callable] = [],
-        model: str = DEFAULT_MODEL,
-        provider: str = DEFAULT_PROVIDER,
         history: List[ChatMessage] = [],
         team: List[AgentFunction] = [],
     ):
@@ -28,9 +28,9 @@ def Agent(
     Args:
         name (str): The name of the agent.
         instructions (str): The instructions for the agent.
-        functions (List[Callable]): The functions that the agent can call.
         model (str): The model to use for the agent.
         provider (str): The provider to use for the agent.
+        functions (List[Callable]): The functions that the agent can call.
         history (List[ChatMessage]): The history of the conversation.
         team (List[AgentFunction]): The team of agents.
 

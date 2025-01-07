@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 import openai
 
-from agento.settings import PROVIDER_URLS, DEFAULT_PROVIDER
+from agento.settings import PROVIDER_URLS
 
 class ChatCompletionMessage(BaseModel):
     """Wrapper class for a chat message."""
@@ -16,7 +16,7 @@ class ChatMessage(BaseModel):
     message: ChatCompletionMessage
     include_in_chat: bool = True
 
-def chat(messages: List[ChatMessage], model: str, provider: str = DEFAULT_PROVIDER) -> str:
+def chat(messages: List[ChatMessage], model: str, provider: str) -> str:
     """
     Get a chat completion from the specified provider.
 

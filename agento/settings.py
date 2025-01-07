@@ -19,13 +19,6 @@ PROVIDER_URLS = {
     "openrouter": (OPENROUTER_URL, OPENROUTER_API_KEY),
 }
 
-# Check if the environment variables are set
-if not os.getenv("DEFAULT_MODEL"):
-    print("Warning: Environment variables not set. Using default values.")
-    print("DEFAULT_MODEL:", "Qwen/Qwen2.5-Coder-7B-Instruct")
-
 # Define the settings
 SYSTEM_PROMPT_PATH = "agento/system_prompt.txt"
-DEFAULT_MODEL = os.getenv("DEFAULT_MODEL", "Qwen/Qwen2.5-Coder-7B-Instruct") # Default model for the agent
-DEFAULT_PROVIDER = os.getenv("DEFAULT_PROVIDER", "vllm") # Default provider for the agent
 DEBUG = False # Whether to print debug information
