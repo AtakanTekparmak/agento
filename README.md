@@ -21,15 +21,6 @@ make test
 
 ## Usage
 
-1. Copy the `.env.example` file to `.env` and set the `DEFAULT_MODEL`, `BASE_URL` and `OPENAI_API_KEY` according to your needs.
-```bash
-make copy_env
-```
-I use [Qwen2.5-Coder-7B-Instruct](https://huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct) in f16 precision through [Ollama](https://ollama.com/). To use the default settings, simply:
-```bash
-ollama pull qwen2.5-coder:7b-instruct-fp16
-```
-
 ### Single-Agent Interaction Example
 
 To run the single-agent interaction example script located in `single_agent_example.py`:
