@@ -43,11 +43,15 @@ def sell_apples(apples: List[str]) -> str:
 seller_agent = Agent(
     name="Seller Agent",
     instructions="You are an apple seller. You can sell apples.",
+    model="qwen2.5-coder:7b-instruct-fp16",
+    provider="ollama",
     functions=[sell_apples],
 )
 agent = Agent(
     name="Apple Agent",
     instructions="You can get and eat apples. You can also transfer the task to the seller agent.",
+    model="qwen2.5-coder:7b-instruct-fp16",
+    provider="ollama",
     functions=[get_apples, eat_apples],
     team=[seller_agent],
 )
