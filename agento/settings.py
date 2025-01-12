@@ -13,9 +13,9 @@ OPENROUTER_URL = "https://openrouter.ai/api/v1"
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 
 PROVIDER_URLS = {
-    "lm_studio": (LM_STUDIO_URL, ""),
+    "lm_studio": (LM_STUDIO_URL, "lm_studio"),
     "ollama": (OLLAMA_URL, "ollama"),
-    "vllm": (VLLM_URL, ""),
+    "vllm": (VLLM_URL, "vllm"),
     "openrouter": (OPENROUTER_URL, OPENROUTER_API_KEY),
 }
 
